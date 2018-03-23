@@ -16,6 +16,7 @@ CastData <- function(data) {
   return (datar)
 }
 
+
 CreateDefaultRecord <- function() {
   mydefault <- CastData(list(id = "0", cname = "haha", address="addressLOL", postal="postalLOL", officecontact="officecontactLOL", centrecode="centrecodeLOL"))
   return (mydefault)
@@ -41,6 +42,7 @@ GetNextId <- function() {
   }
 }
 
+
 CreateData <- function(data) {
   data <- CastData(data)
   rownames(data) <- GetNextId()
@@ -52,6 +54,7 @@ CreateData <- function(data) {
   }
   saveData(responses)
 }
+
 
 ReadData <- function() {
   #if (!exists("responses")){
@@ -66,10 +69,12 @@ UpdateData <- function(data) {
   saveData(data)
 }
 
+
 DeleteData <- function(data) {
   responses <<- responses[row.names(responses) != unname(data["id"]), ]
   saveData(data)
 }
+
 
 GetTableMetadata <- function() {
   fields <- c(id = "Id", 
