@@ -1,5 +1,11 @@
 library(shiny)
+library(shinydashboard)
 
+sidebars <- (sidebarMenu(
+  menuItem("Upload", tabName = "upload", icon = icon("upload")),
+  menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
+  menuItem("Schedules", tabName = "schedules", icon = icon("calendar"))
+))
 
 tab1 <- tabItem(tabName = "upload",
                 sidebarLayout(
@@ -71,11 +77,7 @@ tablebody <- dashboardBody(
   )
 )
 
-sidebars <- (sidebarMenu(
-  menuItem("Upload", tabName = "upload", icon = icon("upload")),
-  menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-  menuItem("Schedules", tabName = "schedules", icon = icon("calendar"))
-))
+
 
 dashboardPage(
   skin= c("red"),
