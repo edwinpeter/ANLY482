@@ -1,4 +1,5 @@
 library(shiny)
+library(shinydashboard)
 library(shinyjs)
 library(WriteXLS)
 library(readxl)
@@ -8,13 +9,10 @@ library(dplyr)
 source('clienthelpers.R')
 
 ########################################### Programs DB - Helper, CRUD methods ###########################################
-#source('programhelpers.R')
+source('programhelpers.R')
 
-########################################### Programs DB - Helper, CRUD methods ###########################################
-source('samplecode.R')
-
-
-
+########################################### Activity DB - Helper , CRUD methods ###########################################
+source('activity.R')
 
 ########################################### User Interface ###########################################
 tab1 <- tabItem(tabName = "dashboard",
@@ -82,10 +80,8 @@ tab3 <- tabItem(tabName = "clientdb",
                            textInput("centrecode", "Centre & Org Code", ""),
                            
                            #action buttons
-                           actionButton("submit", "Submit"),
-                           #actionButton("new", "New"),
-                           #actionButton("delete", "Delete"),
-                           actionButton("update", "Update")
+                           actionButton("submitclient", "Submit"),
+                           actionButton("updateclient", "Update")
                            
                     ),
                     column(width = 8,                  
@@ -107,21 +103,23 @@ tab4 <- tabItem(tabName = "program",
                            #input fields
                            tags$hr(),
                            h2('Enter new Program:'),
-                           shinyjs::disabled(textInput("id", "Id", "0")),
-                           textInput("name", "Client Name", ""),
-                           textInput("address", "Address", ""),
-                           textInput("postal", "Postal", ""),
-                           textInput("officecontact", "Office Contact", ""),
-                           textInput("centrecode", "Centre & Org Code", ""),
-
+                           selectInput("inSelect", "Select Client",c("")),
+                           shinyjs::disabled(textInput("pid", "Id", "0")),
+                           textInput("pname", "POC Name", ""),
+                           textInput("pdesignation", "POC Designation", ""),
+                           textInput("pemail", "POC Email", ""),
+                           textInput("pcontact", "POC Contact", ""),
+                           textInput("pcentrecode", "Centre & Org Code", ""),
+                           
+                           
+                           
                            #action buttons
-                           actionButton("submit", "Submit"),
-                           actionButton("new", "New"),
-                           actionButton("delete", "Delete")
+                           actionButton("submitprogram", "Submit"),
+                           actionButton("updateprogram", "Update")
 
                     ),
-                    column(width = 8
-                           #DT::dataTableOutput("responses")
+                    column(width = 8,
+                           DT::dataTableOutput("programdb")
 
                     )
                   )
@@ -132,7 +130,6 @@ tab5 <- tabItem(tabName = "activity",
                 fluidPage(
                   #use shiny js to disable the ID field
                   h1('Enter Program Information'),
-                  
                   shinyjs::useShinyjs(),
                   fluidRow(
                     column(width = 4,  
@@ -174,7 +171,7 @@ tablebody <- dashboardBody(
     tab2,
     tab3,
     tab4,
-    tab5,
+    tab5
   )
 )
 
@@ -183,7 +180,7 @@ sidebars <- (sidebarMenu(
   menuItem("Schedules", tabName = "schedules", icon = icon("calendar")),
   menuItem("Client Database", tabName = "clientdb", icon = icon("users")),
   menuItem("Programs Database", tabName = "program", icon = icon("list-ol")),
-  menuItem("Activity", tabName = "activity", icon = icon("dolly"))
+  menuItem("Activity", tabName = "activity", icon = icon("pied-piper-alt"))
   
 ))
 
@@ -197,52 +194,7 @@ ui <- dashboardPage(
 
 ########################################### Server ###########################################
 
-server <- function(input, output, session) {
-  shinyjs::disable('update')
-  # input fields are treated as a group
-  formData <- reactive({
-    sapply(names(GetTableMetadata_client()$fields), function(x) input[[x]])
-  })
-  
-  # Click "Submit" button -> save data
-  observeEvent(input$submit, {
-    if (input$id == "0") {
-      CreateData_client(formData())
-      UpdateInputs_client(CreateDefaultRecord_client(), session)
-    }
-  }, priority = 1)
-  
-  #UPDATE
-  observeEvent(input$update, {
-    if (input$id != "0") {
-      UpdateData_client(formData())
-      UpdateInputs_client(CreateDefaultRecord_client(), session)
-    } 
-  }, priority = 1)
-  
-  
-  # Select row in table -> show details in inputs
-  observeEvent(input$clientdb_rows_selected, {
-    shinyjs::enable('update')
-    if (length(input$clientdb_rows_selected) > 0) {
-      x <- ReadData_client()[input$clientdb_rows_selected,]
-      data <- ReadData_client()[input$clientdb_rows_selected, ]
-      UpdateInputs_client(data, session)
-    }
-    
-  })
-  
-  # display table
-  output$clientdb <- DT::renderDataTable({
-    #update after submit is clicked
-    input$submit
-    #update after delete is clicked
-    input$update
-    ReadData_client()
-  }, server = FALSE, selection = "single",
-  colnames = unname(GetTableMetadata_client()$fields)[-1]
-  )     
-}
+source('server.R')
 
 ########################################### Start the whole thing ###########################################
 

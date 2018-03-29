@@ -1,7 +1,7 @@
 ########################################### Programs DB - Helper, CRUD methods ###########################################
 
-
-outputDir_program <- "/Users/Edwin/Desktop/z/crud/ProgramDB"
+#outputDir_client <- "ProgramDB"
+outputDir_program <- "/Users/Edwin/ANLY482/ANLY482/crud/ProgramDB"
 
 saveData_program <- function(programdb) {
   fileName <- sprintf("%s_%s.xls", as.double(format(Sys.time(), "%y%m%d%H%M%S")), "program")
@@ -22,12 +22,12 @@ programdb <- loadData_program()
 programdb <- as.data.frame(programdb)
 
 GetTableMetadata_program <- function() {
-  fields <- c(id = "Id", 
-              cname = "Client Name", 
-              address = "Address", 
-              postal = "Postal", 
-              officecontact = "officecontact",
-              centrecode = "centrecode"
+  fields <- c(pid = "Id", 
+              pname = "Program Name", 
+              paddress = "Address", 
+              ppostal = "Postal", 
+              pofficecontact = "officecontact",
+              pcentrecode = "centrecode"
   )
   
   result <- list(fields = fields)
@@ -47,7 +47,6 @@ CreateData_program <- function(data) {
   
   data <- CastData_program(data)
   rownames(data) <- GetNextId_program()
-  print(rownames)
   if (exists("programdb")) {
     programdb <<- rbind(programdb, data)
   } else {
@@ -68,38 +67,36 @@ ReadData_program <- function() {
 UpdateData_program <- function(data) {
   data <- CastData_program(data)
   programdb[row.names(programdb) == row.names(data), ] <<- data
-  shinyjs::disable('update')
+  shinyjs::disable('updateprogram')
+  shinyjs::enable('submitprogram')
   saveData_program(programdb)
   
 }
 
-#Delete
-DeleteData_program <- function(data) {
-  programdb <<- programdb[row.names(programdb) != unname(data["id"]), ]
-}
 
 CastData_program <- function(data) {
-  datar <- data.frame(name = data["cname"], 
-                      address = data["address"], 
-                      postal = data["postal"], 
-                      officecontact = data["officecontact"], 
-                      centrecode = data["centrecode"],
+  datar <- data.frame(pname = data["pname"], 
+                      paddress = data["paddress"], 
+                      ppostal = data["ppostal"], 
+                      pofficecontact = data["pofficecontact"], 
+                      pcentrecode = data["pcentrecode"],
                       stringsAsFactors = FALSE)
   
-  rownames(datar) <- data["id"]
+  rownames(datar) <- data["pid"]
   return (datar)
 }
 
 CreateDefaultRecord_program <- function() {
-  mydefault <- CastData_program(list(id = "0", cname = "", address="", postal="", officecontact= "", centrecode=""))
+  mydefault <- CastData_program(list(pid = "0", pname = "", paddress="", ppostal="", pofficecontact= "", pcentrecode=""))
   return (mydefault)
 }
 
 UpdateInputs_program <- function(data, session) {
-  updateTextInput(session, "id", value = unname(rownames(data)))
-  updateTextInput(session, "cname", value = unname(data["cname"]))
-  updateTextInput(session, "address", value = unname(data["address"]))
-  updateTextInput(session, "postal", value = unname(data["postal"]))
-  updateTextInput(session, "officecontact", value = unname(data["officecontact"]))
-  updateTextInput(session, "centrecode", value = unname(data["centrecode"]))
+  updateTextInput(session, "pid", value = unname(rownames(data)))
+  updateTextInput(session, "pname", value = unname(data["pname"]))
+  updateTextInput(session, "paddress", value = unname(data["paddress"]))
+  updateTextInput(session, "ppostal", value = unname(data["ppostal"]))
+  updateTextInput(session, "pofficecontact", value = unname(data["pofficecontact"]))
+  updateTextInput(session, "pcentrecode", value = unname(data["pcentrecode"]))
 }
+
