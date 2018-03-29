@@ -2,7 +2,7 @@ library(shiny)
 library(readxl)
 library(WriteXLS)
 library(shinydashboard)
-library(dplyr)
+# library(dplyr)
 
 CastData <- function(data) {
   datar <- data.frame(cname = data["cname"], 
