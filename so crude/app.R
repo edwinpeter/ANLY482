@@ -2,6 +2,7 @@ library(shiny)
 library(readxl)
 library(WriteXLS)
 library(shinydashboard)
+# library(dplyr)
 
 CastData <- function(data) {
   datar <- data.frame(cname = data["cname"], 
@@ -14,6 +15,7 @@ CastData <- function(data) {
   #rownames(datar) <- data["id"]
   return (datar)
 }
+
 
 CreateDefaultRecord <- function() {
   mydefault <- CastData(list(id = "0", cname = "haha", address="addressLOL", postal="postalLOL", officecontact="officecontactLOL", centrecode="centrecodeLOL"))
@@ -40,6 +42,7 @@ GetNextId <- function() {
   }
 }
 
+
 CreateData <- function(data) {
   data <- CastData(data)
   rownames(data) <- GetNextId()
@@ -51,6 +54,7 @@ CreateData <- function(data) {
   }
   saveData(responses)
 }
+
 
 ReadData <- function() {
   #if (!exists("responses")){
@@ -65,10 +69,12 @@ UpdateData <- function(data) {
   saveData(data)
 }
 
+
 DeleteData <- function(data) {
   responses <<- responses[row.names(responses) != unname(data["id"]), ]
   saveData(data)
 }
+
 
 GetTableMetadata <- function() {
   fields <- c(id = "Id", 
@@ -85,7 +91,10 @@ GetTableMetadata <- function() {
 
 
 
-outputDir <- "/Users/Edwin/Desktop/z/crud/responses"
+# outputDir <- "/Users/Edwin/Desktop/z/crud/responses"
+
+#Shafiq's Directory
+outputDir <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/so crud/responses"
 
 saveData <- function(responses) {
   #responses <- t(responses)
@@ -118,6 +127,34 @@ loadData <- function() {
   #data <- do.call(rbind, data)
   data
 }
+
+loadPrepAct <- function() {
+  # Read all the files into a list
+  # Just read latest file
+  #data <- read.table(tail(files, n=1))
+  data <- readxl::read_xls("D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/so crude/activity_data/prep_activities.xls")
+  
+  #data <- lapply(files, read.csv, stringsAsFactors = FALSE) 
+  # Concatenate all data together into one data.frame
+  #data <- do.call(rbind, data)
+  data
+}
+
+prepList <- pull(loadPrepAct(),"activity_name")
+
+loadActualAct <- function() {
+  # Read all the files into a list
+  # Just read latest file
+  #data <- read.table(tail(files, n=1))
+  data <- readxl::read_xls("D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/so crude/activity_data/actual_activities.xls")
+  
+  #data <- lapply(files, read.csv, stringsAsFactors = FALSE) 
+  # Concatenate all data together into one data.frame
+  #data <- do.call(rbind, data)
+  data
+}
+
+actList <- pull(loadActualAct(),"activity_name")
 
 # Define UI for application that draws a histogram
 tab1 <- tabItem(tabName = "dashboard",
@@ -230,12 +267,53 @@ tab4 <- tabItem(tabName = "program",
                 )
 )
 
+tab5 <- tabItem(tabName = "activity",
+                fluidPage(
+                  #use shiny js to disable the ID field
+                  h1('Enter Program Information'),
+                  
+                  shinyjs::useShinyjs(),
+                  fluidRow(
+                    column(width = 4,  
+                           #input fields
+                           tags$hr(),
+                           h2('Choose Prep Day Activities:'),
+                           textInput("activity_date", "Choose Date", ""),
+                           selectInput("prep_id","Choose Prep Activity",prepList),
+                           textInput("activity_start_time", "Select Start Time", ""),
+                           textInput("activity_duration", "Select Duration", ""),
+                           #activity_end_time
+                           #activity_location
+                           
+                           h2('Choose Prep Day Activities:'),
+                           textInput("activity_date", "Choose Date", ""),
+                           selectInput("prep_id","Choose Actual Day Activity",actList),
+                           textInput("activity_start_time", "Select Start Time", ""),
+                           textInput("activity_duration", "Select Duration", ""),
+                           #activity_end_time
+                           #activity_location
+                           
+                           #action buttons
+                           actionButton("submit", "Submit"),
+                           actionButton("new", "New"),
+                           actionButton("delete", "Delete")
+                           
+                    ),
+                    column(width = 8                  
+                           #DT::dataTableOutput("responses")
+                           
+                    )
+                  )
+                )
+)
+
 tablebody <- dashboardBody(
   tabItems(
     tab1,
     tab2,
     tab3,
-    tab4
+    tab4,
+    tab5
   )
 )
 
@@ -243,7 +321,8 @@ sidebars <- (sidebarMenu(
   menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
   menuItem("Schedules", tabName = "schedules", icon = icon("calendar")),
   menuItem("Client Database", tabName = "clientdb", icon = icon("users")),
-  menuItem("Programs Database", tabName = "program", icon = icon("list-ol"))
+  menuItem("Programs Database", tabName = "program", icon = icon("list-ol")),
+  menuItem("Activity Management", tabName = "activity", icon = icon("cog", lib = "glyphicon"))
   
 ))
 

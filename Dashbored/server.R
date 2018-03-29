@@ -3,7 +3,7 @@ library(DT)
 
   
 shinyServer(function(input, output, session) {
-  directory <- "/Users/Edwin/Desktop/AP/"
+  directory <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/Dashbored/"
   mbafilename <- "prep_day_data.csv"
   timeseriesfilename <- "Time Series Data.csv"
   mbafile_directory <- paste(directory, mbafilename, sep="")
