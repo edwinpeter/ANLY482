@@ -1,6 +1,7 @@
 ########################################### CLIENT DB - Helper, CRUD methods ###########################################
 
-outputDir_client <- "/Users/Edwin/Desktop/z/crud/ClientDB"
+#outputDir_client <- "ClientDB"
+outputDir_client <- "/Users/Edwin/ANLY482/ANLY482/crud/ClientDB"
 
 saveData_client <- function(clientdb) {
   fileName <- sprintf("%s_%s.xls", as.double(format(Sys.time(), "%y%m%d%H%M%S")), "client")
@@ -20,13 +21,14 @@ loadData_client <- function() {
 clientdb <- loadData_client()
 clientdb <- as.data.frame(clientdb)
 
+
 GetTableMetadata_client <- function() {
   fields <- c(id = "Id", 
               cname = "Client Name", 
               address = "Address", 
               postal = "Postal", 
-              officecontact = "officecontact",
-              centrecode = "centrecode"
+              officecontact = "Office Contact",
+              centrecode = "Centre & Org Code"
   )
   
   result <- list(fields = fields)
@@ -46,7 +48,6 @@ CreateData_client <- function(data) {
   
   data <- CastData_client(data)
   rownames(data) <- GetNextId_client()
-  print(rownames)
   if (exists("clientdb")) {
     clientdb <<- rbind(clientdb, data)
   } else {
@@ -54,6 +55,7 @@ CreateData_client <- function(data) {
   }
   
   saveData_client(clientdb)
+  
 }
 
 #Read
@@ -67,9 +69,10 @@ ReadData_client <- function() {
 UpdateData_client <- function(data) {
   data <- CastData_client(data)
   clientdb[row.names(clientdb) == row.names(data), ] <<- data
-  shinyjs::disable('update')
-  saveData_client(clientdb)
+  shinyjs::disable('updateclient')
+  shinyjs::enable('submitclient')
   
+  saveData_client(clientdb)
 }
 
 #Delete
@@ -78,7 +81,7 @@ DeleteData_client <- function(data) {
 }
 
 CastData_client <- function(data) {
-  datar <- data.frame(name = data["cname"], 
+  datar <- data.frame(cname = data["cname"], 
                       address = data["address"], 
                       postal = data["postal"], 
                       officecontact = data["officecontact"], 
