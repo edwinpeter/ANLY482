@@ -72,7 +72,7 @@ tab3 <- tabItem(tabName = "clientdb",
                            #input fields
                            tags$hr(),
                            h2('Enter new client:'),
-                           shinyjs::disabled(textInput("id", "Id", "0")),
+                           shinyjs::hidden(textInput("id", "Id", "0")),
                            textInput("cname", "Client Name", ""),
                            textInput("address", "Address", ""),
                            textInput("postal", "Postal", ""),
@@ -95,31 +95,37 @@ tab3 <- tabItem(tabName = "clientdb",
 tab4 <- tabItem(tabName = "program",
                 fluidPage(
                   #use shiny js to disable the ID field
-                  h1('NOT DONE YET Programs Database'),
+                  h1('Programs Database'),
 
                   shinyjs::useShinyjs(),
                   fluidRow(
-                    column(width = 4,
+                    column(width = 5,
                            #input fields
                            tags$hr(),
-                           h2('Enter new Program:'),
-                           selectInput("inSelect", "Select Client",c("")),
-                           shinyjs::disabled(textInput("pid", "Id", "0")),
-                           textInput("pname", "POC Name", ""),
-                           textInput("pdesignation", "POC Designation", ""),
-                           textInput("pemail", "POC Email", ""),
-                           textInput("pcontact", "POC Contact", ""),
-                           textInput("pcentrecode", "Centre & Org Code", ""),
-                           
-                           
+                           h3('Enter POC details:'),
+                           shinyjs::hidden(textInput("pid", "Id", "0")),
+                           selectInput("program_client_name", "Select Client",c("")),
+                           textInput("poc_name", "POC Name", ""),
+                           textInput("poc_designation", "POC Designation", ""),
+                           textInput("poc_email", "POC Email", ""),
+                           textInput("poc_contact", "POC Contact", "")
+                    ),
+                    column(width = 5,
+                           #input fields
+                           tags$hr(),
+                           h3('Enter Program details:'),
+                           textInput("prog_location", "Program Location", ""),
+                           selectInput("prog_age", "Select Ages",c("K1", "K2", "Mixed")),
+                           textInput("prog_est_popn", "Program Estimated Size", ""),
+                           textInput("prog_type", "Program Type", ""),
+                           textInput("prog_duration", "Program Duration", ""),
                            
                            #action buttons
                            actionButton("submitprogram", "Submit"),
                            actionButton("updateprogram", "Update")
-
                     ),
-                    column(width = 8,
-                           DT::dataTableOutput("programdb")
+                    column(width = 12,
+                           DT::dataTableOutput("programdb", width="100%")
 
                     )
                   )

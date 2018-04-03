@@ -23,11 +23,17 @@ programdb <- as.data.frame(programdb)
 
 GetTableMetadata_program <- function() {
   fields <- c(pid = "Id", 
-              pname = "Program Name", 
-              paddress = "Address", 
-              ppostal = "Postal", 
-              pofficecontact = "officecontact",
-              pcentrecode = "centrecode"
+              program_client_name = "Client", 
+              poc_name = "POC Name", 
+              poc_designation = "POC Designation", 
+              poc_email = "POC Email",
+              poc_contact = "POC Contact",
+              prog_location = "Program Location",
+              prog_age = "Age Group",
+              prog_est_popn = "Estimated Size",
+              prog_type = "Program Type",
+              prog_duration = "Program Day(s)"
+              
   )
   
   result <- list(fields = fields)
@@ -73,13 +79,18 @@ UpdateData_program <- function(data) {
   
 }
 
-
 CastData_program <- function(data) {
-  datar <- data.frame(pname = data["pname"], 
-                      paddress = data["paddress"], 
-                      ppostal = data["ppostal"], 
-                      pofficecontact = data["pofficecontact"], 
-                      pcentrecode = data["pcentrecode"],
+  print(data)
+  datar <- data.frame(program_client_name = data["program_client_name"],
+                      poc_name = data["poc_name"], 
+                      poc_designation = data["poc_designation"], 
+                      poc_email = data["poc_email"], 
+                      poc_contact = data["poc_contact"], 
+                      prog_location = data["prog_location"], 
+                      prog_age = data["prog_age"], 
+                      prog_est_popn = data["prog_est_popn"], 
+                      prog_type = data["prog_type"], 
+                      prog_duration = data["prog_duration"], 
                       stringsAsFactors = FALSE)
   
   rownames(datar) <- data["pid"]
@@ -87,16 +98,25 @@ CastData_program <- function(data) {
 }
 
 CreateDefaultRecord_program <- function() {
-  mydefault <- CastData_program(list(pid = "0", pname = "", paddress="", ppostal="", pofficecontact= "", pcentrecode=""))
+  mydefault <- CastData_program(list(pid = "0", program_client_name= "", poc_name = "", poc_designation="", poc_email="", poc_contact= "", prog_location = "", prog_age ="", prog_est_popn ="", prog_type ="", prog_duration =""))
   return (mydefault)
 }
 
 UpdateInputs_program <- function(data, session) {
   updateTextInput(session, "pid", value = unname(rownames(data)))
-  updateTextInput(session, "pname", value = unname(data["pname"]))
-  updateTextInput(session, "paddress", value = unname(data["paddress"]))
-  updateTextInput(session, "ppostal", value = unname(data["ppostal"]))
-  updateTextInput(session, "pofficecontact", value = unname(data["pofficecontact"]))
-  updateTextInput(session, "pcentrecode", value = unname(data["pcentrecode"]))
+  updateTextInput(session, "poc_name", value = unname(data["poc_name"]))
+  updateTextInput(session, "poc_designation", value = unname(data["poc_designation"]))
+  updateTextInput(session, "poc_email", value = unname(data["poc_email"]))
+  updateTextInput(session, "poc_contact", value = unname(data["poc_contact"]))
+  updateTextInput(session, "prog_location", value = unname(data["prog_location"]))
+  updateCheckboxInput(session, "prog_age", value = as.logical(data["prog_age"]))
+  updateTextInput(session, "prog_est_popn", value = unname(data["prog_est_popn"]))
+  updateTextInput(session, "prog_type", value = unname(data["prog_type"]))
+  updateTextInput(session, "prog_duration", value = unname(data["prog_duration"]))
 }
+
+
+
+
+
 
