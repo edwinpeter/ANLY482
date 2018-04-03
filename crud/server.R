@@ -65,8 +65,6 @@ server <- function(input, output, session) {
   #UPDATE
   observeEvent(input$updateprogram, {
     if (input$pid != "0") {
-      print("ADAS")
-      
       UpdateData_program(formData_program())
       UpdateInputs_program(CreateDefaultRecord_program(), session)
     } 
@@ -92,7 +90,8 @@ server <- function(input, output, session) {
     input$updateprogram
     ReadData_program()
   }, server = FALSE, selection = "single",
-  colnames = unname(GetTableMetadata_program()$fields)[-1]
+  colnames = unname(GetTableMetadata_program()$fields)[-1],
+  options = list(scrollX = TRUE)
   )
   
   
@@ -109,7 +108,7 @@ server <- function(input, output, session) {
       x <- character(0)
     
     # Can also set the label and select items
-    updateSelectInput(session, "inSelect",
+    updateSelectInput(session, "program_client_name",
                       label = paste("Select Client (", length(x), ")"),
                       choices = x,
                       selected = tail(x, 1)
