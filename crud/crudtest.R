@@ -140,10 +140,15 @@ tab5 <- tabItem(tabName = "activity",
                            selectInput("prep_id","Choose Prep Activity",prepList), #this is where we do drop down list
                            textInput("activity_start_time", "Select Start Time", ""),
                            textInput("activity_duration", "Select Duration", ""),
+                           textInput("activity_location", "Select Location", ""),
                            #activity_end_time
                            #activity_location
                            
-                           h2('Choose Prep Day Activities:'),
+                           #action buttons for prep day
+                           actionButton("submitprepact", "Submit"),
+                           actionButton("updateprepact", "Update"),
+
+                           h2('Choose Actual Day Activities:'),
                            textInput("activity_date", "Choose Date", ""),
                            selectInput("prep_id","Choose Actual Day Activity",actList), #this is where we do drop down list
                            textInput("activity_start_time", "Select Start Time", ""),
@@ -151,14 +156,19 @@ tab5 <- tabItem(tabName = "activity",
                            #activity_end_time
                            #activity_location
                            
-                           #action buttons
-                           actionButton("submit", "Submit"),
-                           actionButton("new", "New"),
-                           actionButton("delete", "Delete")
+                           #action buttons for prep day
+                           actionButton("submitactlact", "Submit"),
+                           actionButton("updateactlact", "Update")
+
+                           
                            
                     ),
-                    column(width = 8                  
-                           #DT::dataTableOutput("responses")
+                    column(width = 8,                  
+                           DT::dataTableOutput("prepdb")
+                           
+                    ),
+                    column(width = 8,                  
+                           DT::dataTableOutput("actldb")
                            
                     )
                   )
