@@ -1,9 +1,17 @@
+#Sort this out 
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
+library(shinyTime)
+library(timevis)
+
 library(WriteXLS)
 library(readxl)
+
 library(dplyr)
+
+library(DT)
+
 
 ########################################### CLIENT DB - Helper, CRUD methods ###########################################
 source('clienthelpers.R')
@@ -12,35 +20,46 @@ source('clienthelpers.R')
 source('programhelpers.R')
 
 ########################################### Activity DB - Helper , CRUD methods ###########################################
-source('activity.R')
+source('activityhelpers.R')
 
 ########################################### User Interface ###########################################
+
+
+
 tab1 <- tabItem(tabName = "dashboard",
                 fluidPage(
                   
                   title = 'Select Table Rows',
                   
-                  h1('Market Basket Data'),
+                  h1('Overview'),
                   
                   fluidRow(
-                    column(width = 6,
-                           box(
-                             title = "MBA Data", width = NULL, status = "primary",
-                             div(style = 'overflow-x: scroll', DT::dataTableOutput('x1'))
-                           )),
-                    column(6, plotOutput('x2', height = 500))
+                    # column(width = 6,
+                    #        box(
+                    #          title = "MBA Data", width = NULL, status = "primary",
+                    #          div(style = 'overflow-x: scroll', DT::dataTableOutput('x1'))
+                    #        )),
+                    # column(6, plotOutput('x2', height = 500))
+                    #selectInput("program_client_name", "Select Client",c("")),
+                    valueBoxOutput("value1"),
+                    valueBoxOutput("value2"),
+                    valueBoxOutput("value3")
+                    
                   ),
                   
                   fluidRow(
                     #column(9, DT::dataTableOutput('x3')),
                     #column(3, verbatimTextOutput('x4'))
+                    timevisOutput("timeline")
+                    
+                    
                   )
                   
                 )
 )
 
 
-tab2 <- tabItem(tabName = "schedules",
+tab2 <- tabItem(tabName = "mba",
                 fluidPage(
                   
                   title = 'Select Table Rows',
@@ -48,7 +67,7 @@ tab2 <- tabItem(tabName = "schedules",
                   fluidRow(
                     column(width = 12,
                            box(
-                             title = "Time Series Data", width = NULL, status = "primary",
+                             title = "Market Basket Analysis", width = NULL, status = "primary",
                              div(style = 'overflow-x: scroll', DT::dataTableOutput('ts'))
                            ))
                   ),
@@ -119,6 +138,8 @@ tab4 <- tabItem(tabName = "program",
                            textInput("prog_est_popn", "Program Estimated Size", ""),
                            textInput("prog_type", "Program Type", ""),
                            textInput("prog_duration", "Program Duration", ""),
+                           shinyjs::hidden(textInput("client_date_created", "client_date_created", "")),
+                           
                            
                            #action buttons
                            actionButton("submitprogram", "Submit"),
@@ -142,13 +163,22 @@ tab5 <- tabItem(tabName = "activity",
                            #input fields
                            tags$hr(),
                            h2('Choose Prep Day Activities:'),
-                           textInput("activity_date", "Choose Date", ""),
-                           selectInput("prep_id","Choose Prep Activity",prepList), #this is where we do drop down list
-                           textInput("activity_start_time", "Select Start Time", ""),
+                           shinyjs::hidden(textInput("ppid", "Id", "0")),
+                           selectInput("activity_client_date", "Select Program",c("")),
+                           tags$hr(),
+                           dateInput("activity_date", "Choose Date", "", format = "dd-mm-yy"),
+                           selectInput("prep_id","Choose Prep Activity", prepList), #this is where we do drop down list
+                           #timeInput("activity_start_time", "Select Start Time:", seconds = FALSE),
+                           textInput("activity_start_time", "Select Start Time:", ""),
                            textInput("activity_duration", "Select Duration", ""),
+                           #timeInput("activity_end_time", "Select End Time:", seconds = FALSE),
+                           textInput("activity_end_time", "Select End Time:", ""),
                            textInput("activity_location", "Select Location", ""),
-                           #activity_end_time
-                           #activity_location
+                           # dateRangeInput('dateRange',
+                           #                label = 'Date range input: yyyy-mm-dd',
+                           #                start = "", end = ""
+                           # ),
+                           
                            
                            #action buttons for prep day
                            actionButton("submitprepact", "Submit"),
@@ -170,7 +200,7 @@ tab5 <- tabItem(tabName = "activity",
                            
                     ),
                     column(width = 8,                  
-                           DT::dataTableOutput("prepdb")
+                           DT::dataTableOutput("prepprogramdb")
                            
                     ),
                     column(width = 8,                  
@@ -193,7 +223,7 @@ tablebody <- dashboardBody(
 
 sidebars <- (sidebarMenu(
   menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-  menuItem("Schedules", tabName = "schedules", icon = icon("calendar")),
+  menuItem("Analysis 1 - MBA", tabName = "mba", icon = icon("signal")),
   menuItem("Client Database", tabName = "clientdb", icon = icon("users")),
   menuItem("Programs Database", tabName = "program", icon = icon("list-ol")),
   menuItem("Activity", tabName = "activity", icon = icon("pied-piper-alt"))

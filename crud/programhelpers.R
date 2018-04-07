@@ -1,8 +1,8 @@
 ########################################### Programs DB - Helper, CRUD methods ###########################################
 
 #outputDir_client <- "ProgramDB"
-# outputDir_program <- "/Users/Edwin/ANLY482/ANLY482/crud/ProgramDB"
-outputDir_program <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/ProgramDB"
+outputDir_program <- "/Users/Edwin/ANLY482/crud/ProgramDB"
+#outputDir_program <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/ProgramDB"
 
 
 saveData_program <- function(programdb) {
@@ -34,7 +34,8 @@ GetTableMetadata_program <- function() {
               prog_age = "Age Group",
               prog_est_popn = "Estimated Size",
               prog_type = "Program Type",
-              prog_duration = "Program Day(s)"
+              prog_duration = "Program Day(s)",
+              client_date_created = "Client-Date-Created"
               
   )
   
@@ -52,9 +53,14 @@ GetNextId_program <- function() {
 
 #Create
 CreateData_program <- function(data) {
-  
   data <- CastData_program(data)
+  
+  tempname <- paste(data$program_client_name, format(Sys.Date(), "%d-%m-%y"))
+  
   rownames(data) <- GetNextId_program()
+  
+  data$client_date_created <- tempname
+  
   if (exists("programdb")) {
     programdb <<- rbind(programdb, data)
   } else {
@@ -82,7 +88,6 @@ UpdateData_program <- function(data) {
 }
 
 CastData_program <- function(data) {
-  print(data)
   datar <- data.frame(program_client_name = data["program_client_name"],
                       poc_name = data["poc_name"], 
                       poc_designation = data["poc_designation"], 
@@ -93,6 +98,7 @@ CastData_program <- function(data) {
                       prog_est_popn = data["prog_est_popn"], 
                       prog_type = data["prog_type"], 
                       prog_duration = data["prog_duration"], 
+                      client_date_created = data["client_date_created"],
                       stringsAsFactors = FALSE)
   
   rownames(datar) <- data["pid"]
@@ -100,7 +106,7 @@ CastData_program <- function(data) {
 }
 
 CreateDefaultRecord_program <- function() {
-  mydefault <- CastData_program(list(pid = "0", program_client_name= "", poc_name = "", poc_designation="", poc_email="", poc_contact= "", prog_location = "", prog_age ="", prog_est_popn ="", prog_type ="", prog_duration =""))
+  mydefault <- CastData_program(list(pid = "0", program_client_name= "", poc_name = "", poc_designation="", poc_email="", poc_contact= "", prog_location = "", prog_age ="", prog_est_popn ="", prog_type ="", prog_duration ="", client_date_created=""))
   return (mydefault)
 }
 
@@ -115,10 +121,5 @@ UpdateInputs_program <- function(data, session) {
   updateTextInput(session, "prog_est_popn", value = unname(data["prog_est_popn"]))
   updateTextInput(session, "prog_type", value = unname(data["prog_type"]))
   updateTextInput(session, "prog_duration", value = unname(data["prog_duration"]))
+  updateTextInput(session, "client_date_created", value = unname(data["client_date_created"]))
 }
-
-
-
-
-
-

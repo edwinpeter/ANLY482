@@ -1,8 +1,8 @@
 ########################################### CLIENT DB - Helper, CRUD methods ###########################################
 
 #outputDir_client <- "ClientDB"
-# outputDir_client <- "/Users/Edwin/ANLY482/ANLY482/crud/ClientDB"
-outputDir_client <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/ClientDB"
+outputDir_client <- "/Users/Edwin/ANLY482/crud/ClientDB"
+# outputDir_client <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/ClientDB"
 
 saveData_client <- function(clientdb) {
   fileName <- sprintf("%s_%s.xls", as.double(format(Sys.time(), "%y%m%d%H%M%S")), "client")
