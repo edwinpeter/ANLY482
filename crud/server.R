@@ -229,19 +229,30 @@ server <- function(input, output, session) {
   })
   
   ###################################### Server for MBA Analysis #########################################################
-  output$mbagraph = renderPlotly({
-    plot(basket_rules, method = "scatter", engine = "htmlwidget")
-  })
-  
-  # display table
-  output$transactiontbl <- DT::renderDataTable({
-    ReadData_mbatbl()
-    if(input$activity_client_date == ""){
-      ReadData_mbatbl()
-    }else{
-      ReadData_mbatbl()
+
+  sliderValues <- reactive({
+    prepareBasket()
+    transaction <- generateTransactions()
+    transaction
+    basket_rules <- apriori(transaction.data,parameter = list(target = 'rules', supp=input$support,conf=input$confidence))
+    basket_rules
+    inspect(basket_rules)
+    if(sessionInfo()['basePkgs']=="tm" | sessionInfo()['otherPkgs']=="tm"){
+      detach(package:tm, unload=TRUE)
     }
-  }, server = FALSE, selection = "single",
-  colnames = unname(GetTableMetadata_mbatbl()$fields)[-1]
-  )
+
+    # inspect(basket_rules)
+    mbatbl <- transaction@itemInfo
+  })
+
+  output$mbagraph = renderPlotly({
+    sliderValues()
+    basket_rules <- apriori(transaction.data,parameter = list(target = 'rules', supp=0.1,conf=0.2))
+    basket_rules
+    inspect(basket_rules)
+    plot(basket_rules, method = "scatter", engine = "htmlwidget")
+    # plot(basket_rules,method = "matrix",control = list(reorder = TRUE))
+    # itemFrequencyPlot(transaction@itemInfo, topN = 5)
+    # plotly_arules(transaction@itemInfo)
+  })
 }

@@ -79,6 +79,19 @@ ReadData_actl <- function() {
 # outputDir_prepprogram <- "/Users/Edwin/ANLY482/crud/PrepActivityDB/"
 outputDir_prepprogram <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/PrepActivityDB/"
 
+###########################################################################################################################
+outputDir_actprogram <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/ActualActivityDB/"
+loadData_actprogram <- function() {
+  files <- list.files(outputDir_actprogram, full.names = TRUE)
+  data <- readxl::read_xls(tail(files, n=1))
+  data
+}
+
+actprogramdb <- loadData_actprogram()
+actprogramdb <- as.data.frame(actprogramdb)
+
+###########################################################################################################################
+
 saveData_prepprogram <- function(prepprogramdb) {
   fileName <- sprintf("%s_%s.xls", as.double(format(Sys.time(), "%y%m%d%H%M%S")), "prepprog")
   WriteXLS::WriteXLS(

@@ -23,6 +23,9 @@ source('programhelpers.R')
 ########################################### Activity DB - Helper , CRUD methods ###########################################
 source('activityhelpers.R')
 
+########################################### Activity DB - Helper , CRUD methods ###########################################
+source('mbahelpers.R')
+
 ########################################### User Interface ###########################################
 
 
@@ -63,26 +66,45 @@ tab1 <- tabItem(tabName = "dashboard",
 tab2 <- tabItem(tabName = "mba",
                 fluidPage(
                   
-                  title = 'Select Table Rows',
+                title = 'Select Table Rows',
+                
+                # Sidebar layout with input and output definitions ----
+                sidebarLayout(
                   
-                  fluidRow(
-                    column(width = 8,                  
-                           plotlyOutput("mbagraph")
-                           
+                  # Sidebar to demonstrate various slider options ----
+                  sidebarPanel(
+                    
+                    # Input: Decimal interval with step value ----
+                    sliderInput("support", "Support:",
+                                min = 0.001, max = 0.999,
+                                value = 0.001, step = 0.001),
+                    
+                    # Input: Decimal interval with step value ----
+                    sliderInput("confidence", "Confidence:",
+                                min = 0.01, max = 0.99,
+                                value = 0.01, step = 0.01)
+                    
                     ),
-                    column(width = 12,
-                           box(
-                             title = "Market Basket Analysis", width = NULL, status = "primary",
-                             div(style = 'overflow-x: scroll', DT::dataTableOutput("mbatbl"))
-                           ))
-                  ),
-                  
-                  fluidRow(
-                    #column(9, DT::dataTableOutput('x3')),
-                    #column(3, verbatimTextOutput('x4'))
+                  mainPanel(
+                    fluidRow(
+                      column(width = 12,                  
+                             plotlyOutput("mbagraph")
+                             
+                      ),
+                      column(width = 12,
+                             box(
+                               title = "Market Basket Analysis", width = NULL, status = "primary",
+                               div(style = 'overflow-x: scroll', DT::dataTableOutput("mbatbl"))
+                             ))
+                    ),
+                    
+                    fluidRow(
+                      #column(9, DT::dataTableOutput('x3')),
+                      #column(3, verbatimTextOutput('x4'))
+                    )
                   )
-                  
                 )
+  )
 )
 
 tab3 <- tabItem(tabName = "clientdb",
