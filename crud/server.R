@@ -227,5 +227,21 @@ server <- function(input, output, session) {
                       selected = ''
     )
   })
-
+  
+  ###################################### Server for MBA Analysis #########################################################
+  output$mbagraph = renderPlotly({
+    plot(basket_rules, method = "scatter", engine = "htmlwidget")
+  })
+  
+  # display table
+  output$transactiontbl <- DT::renderDataTable({
+    ReadData_mbatbl()
+    if(input$activity_client_date == ""){
+      ReadData_mbatbl()
+    }else{
+      ReadData_mbatbl()
+    }
+  }, server = FALSE, selection = "single",
+  colnames = unname(GetTableMetadata_mbatbl()$fields)[-1]
+  )
 }

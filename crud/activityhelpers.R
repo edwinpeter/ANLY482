@@ -1,15 +1,15 @@
 ########################################### Activity - Helper, CRUD methods ###########################################
 
-#directoryprepact <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/prep_activities.xls"
-#directoryactualact <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/actual_activities.xls"
-#directoryprepprog <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/prep_list.xls"
-#directoryactualprog <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/actual_list.xls"
+directoryprepact <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/prep_activities.xls"
+directoryactualact <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/actual_activities.xls"
+directoryprepprog <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/prep_list.xls"
+directoryactualprog <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/Data/actual_list.xls"
 
-directoryprepact <- "/Users/Edwin/ANLY482/crud/Data/prep_activities.xls"
-directoryactualact <- "/Users/Edwin/ANLY482/crud/Data/actual_activities.xls"
-
-directoryprepprog <- "/Users/Edwin/ANLY482/crud/Data/prep_list.xls"
-directoryactualprog <- "/Users/Edwin/ANLY482/crud/Data/actual_list.xls"
+# directoryprepact <- "/Users/Edwin/ANLY482/crud/Data/prep_activities.xls"
+# directoryactualact <- "/Users/Edwin/ANLY482/crud/Data/actual_activities.xls"
+# 
+# directoryprepprog <- "/Users/Edwin/ANLY482/crud/Data/prep_list.xls"
+# directoryactualprog <- "/Users/Edwin/ANLY482/crud/Data/actual_list.xls"
 
 
 loadPrepAct <- function() {
@@ -76,7 +76,8 @@ ReadData_actl <- function() {
 
 ###################################### Manage Prep Day Programs #########################################################
 
-outputDir_prepprogram <- "/Users/Edwin/ANLY482/crud/PrepActivityDB/"
+# outputDir_prepprogram <- "/Users/Edwin/ANLY482/crud/PrepActivityDB/"
+outputDir_prepprogram <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/PrepActivityDB/"
 
 saveData_prepprogram <- function(prepprogramdb) {
   fileName <- sprintf("%s_%s.xls", as.double(format(Sys.time(), "%y%m%d%H%M%S")), "prepprog")

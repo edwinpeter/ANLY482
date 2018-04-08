@@ -11,6 +11,7 @@ library(readxl)
 library(dplyr)
 
 library(DT)
+library(plotly)
 
 
 ########################################### CLIENT DB - Helper, CRUD methods ###########################################
@@ -65,10 +66,14 @@ tab2 <- tabItem(tabName = "mba",
                   title = 'Select Table Rows',
                   
                   fluidRow(
+                    column(width = 8,                  
+                           plotlyOutput("mbagraph")
+                           
+                    ),
                     column(width = 12,
                            box(
                              title = "Market Basket Analysis", width = NULL, status = "primary",
-                             div(style = 'overflow-x: scroll', DT::dataTableOutput('ts'))
+                             div(style = 'overflow-x: scroll', DT::dataTableOutput("mbatbl"))
                            ))
                   ),
                   
