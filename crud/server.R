@@ -230,13 +230,11 @@ server <- function(input, output, session) {
   
   ###################################### Server for MBA Analysis #########################################################
 
+  
+  
   sliderValues <- reactive({
     prepareBasket()
     transaction <- generateTransactions()
-    transaction
-    basket_rules <- apriori(transaction.data,parameter = list(target = 'rules', supp=input$support,conf=input$confidence))
-    basket_rules
-    inspect(basket_rules)
     if(sessionInfo()['basePkgs']=="tm" | sessionInfo()['otherPkgs']=="tm"){
       detach(package:tm, unload=TRUE)
     }
@@ -246,13 +244,54 @@ server <- function(input, output, session) {
   })
 
   output$mbagraph = renderPlotly({
-    sliderValues()
-    basket_rules <- apriori(transaction.data,parameter = list(target = 'rules', supp=0.1,conf=0.2))
-    basket_rules
-    inspect(basket_rules)
-    plot(basket_rules, method = "scatter", engine = "htmlwidget")
-    # plot(basket_rules,method = "matrix",control = list(reorder = TRUE))
-    # itemFrequencyPlot(transaction@itemInfo, topN = 5)
-    # plotly_arules(transaction@itemInfo)
+    
+    # plot(rules, method="graph", engine = 'interactive')
+    arulesViz::plotly_arules(rules)
   })
+  
+  
+  
+  
+  
+  
+  # #Plot using arulesviz and xquartz
+  # plot(rules, method="graph", engine = 'interactive')
+  # 
+  # #Convert rules class into a dataframe for easy viewing
+  # ruledf = data.frame(
+  #   lhs = labels(lhs(rules)),
+  #   rhs = labels(rhs(rules)),
+  #   rules@quality
+  # )
+  # 
+  # #Clean out [] and {}
+  # ruledf$lhs <- gsub("[{}]", "", as.character(ruledf$lhs))
+  # ruledf$rhs <- gsub("[{}]", "", as.character(ruledf$rhs))
+  # 
+  # #Create rules in the format {A} => {B} (lhs, rhs)
+  # ruledf$rule <-paste(ruledf$lhs, " => ", ruledf$rhs)
+  # 
+  # write.csv(ruledf, paste(directory, "prep_rules2.csv"))
+  # 
+  # ########## Optional ########## 
+  # 
+  # #Order by Lift
+  # ruledf <- ruledf[order(-ruledf$lift),]
+  # 
+  # #Limit lift >1
+  # ruledf_1 <- ruledf[ruledf$lift >= 1, ]
+  # 
+  # 
+  # 
+  # plot(rules, method = NULL, measure = "support", shading = "lift", 
+  #      interactive = FALSE, data = NULL, control = NULL, engine = "default")
+  # 
+  # plot(rules, measure=c("support", "lift"), shading="confidence")
+  # 
+  # 
+  # sel <- plot(rules, measure=c("support", "lift"), shading="confidence", interactive=TRUE)
+  # 
+  # 
+  # plot(rules, method="paracoord", control=list(type="itemsets"))
+  # 
 }

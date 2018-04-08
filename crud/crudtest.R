@@ -12,6 +12,15 @@ library(dplyr)
 
 library(DT)
 library(plotly)
+require('ggplot2')
+
+
+require('arules')
+require('reshape2')
+require('arulesViz')
+require('viridisLite')
+require('tcltk')
+# require('tcltk2')
 
 
 ########################################### CLIENT DB - Helper, CRUD methods ###########################################
