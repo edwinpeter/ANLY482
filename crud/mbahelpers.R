@@ -94,5 +94,6 @@ GetTableMetadata_mbatbl <- function() {
 
 #Manipulate databases for MBA through prepareBasket()
 transactions.data <- prepareBasket()
-#Use apriori from arules package where rules will be mined with supp >= 0.01 and confidence >= 0.5
-rules <- apriori(transactions.data, parameter = list(supp=0.01, conf=0.5))
+
+#Defining rules
+# rules <- apriori(transactions.data, parameter = list(supp=0.01, conf=0.5))

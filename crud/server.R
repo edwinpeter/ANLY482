@@ -234,19 +234,14 @@ server <- function(input, output, session) {
   
   sliderValues <- reactive({
     prepareBasket()
-    transaction <- generateTransactions()
-    if(sessionInfo()['basePkgs']=="tm" | sessionInfo()['otherPkgs']=="tm"){
-      detach(package:tm, unload=TRUE)
-    }
-
-    # inspect(basket_rules)
-    mbatbl <- transaction@itemInfo
+    rules <- apriori(transactions.data, parameter = list(supp=input$supp, conf=input$conf))
   })
 
   output$mbagraph = renderPlotly({
-    
     # plot(rules, method="graph", engine = 'interactive')
-    arulesViz::plotly_arules(rules)
+    sliderValues()
+    rules <- apriori(transactions.data, parameter = list(supp=input$supp, conf=input$conf))
+    plotly_arules(rules)
   })
   
   
