@@ -1,18 +1,36 @@
-#Sort this out 
+# Libraries Used:
+
+# For shiny visualization
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
-library(shinyTime)
 library(timevis)
 
+# For reading and write XLS files to local database
 library(WriteXLS)
 library(readxl)
 
+# To pull data from XLS
 library(dplyr)
 
+# To put data into data table
 library(DT)
-library(plotly)
 
+# Plotting libraries for graphs
+library(plotly)
+library(ggplot2)
+
+# For time function
+library(lubridate)
+
+# For rules and market basket analysis
+library(arules)
+library(reshape2)
+library(arulesViz)
+library(viridisLite)
+library(tcltk)
+library(plyr)
+library(reshape2)
 
 ########################################### CLIENT DB - Helper, CRUD methods ###########################################
 source('clienthelpers.R')
@@ -26,6 +44,9 @@ source('activityhelpers.R')
 ########################################### Activity DB - Helper , CRUD methods ###########################################
 source('mbahelpers.R')
 
+########################################### Dashboard - Helper ###########################################
+source('dashboardhelpers.R')
+
 ########################################### User Interface ###########################################
 
 
@@ -38,13 +59,6 @@ tab1 <- tabItem(tabName = "dashboard",
                   h1('Overview'),
                   
                   fluidRow(
-                    # column(width = 6,
-                    #        box(
-                    #          title = "MBA Data", width = NULL, status = "primary",
-                    #          div(style = 'overflow-x: scroll', DT::dataTableOutput('x1'))
-                    #        )),
-                    # column(6, plotOutput('x2', height = 500))
-                    #selectInput("program_client_name", "Select Client",c("")),
                     valueBoxOutput("value1"),
                     valueBoxOutput("value2"),
                     valueBoxOutput("value3")
@@ -52,13 +66,15 @@ tab1 <- tabItem(tabName = "dashboard",
                   ),
                   
                   fluidRow(
-                    #column(9, DT::dataTableOutput('x3')),
-                    #column(3, verbatimTextOutput('x4'))
-                    timevisOutput("timeline")
-                    
+                    timevisOutput("timeline"),
+                    DT::dataTableOutput("timetable")
+                  ),
+                  tags$hr(),
+                  fluidRow(
+                    column(6, plotlyOutput("frequencyplotprep")),
+                    column(6, plotlyOutput("frequencyplotact"))
                     
                   )
-                  
                 )
 )
 
@@ -66,56 +82,45 @@ tab1 <- tabItem(tabName = "dashboard",
 tab2 <- tabItem(tabName = "mba",
                 fluidPage(
                   
-                title = 'Select Table Rows',
-                
-                # Sidebar layout with input and output definitions ----
-                sidebarLayout(
+                  h1('Market Basket Analysis'),
                   
-                  # Sidebar to demonstrate various slider options ----
-                  sidebarPanel(
+                  # Sidebar layout with input and output definitions ----
+                  sidebarLayout(
                     
-                    # Input: Decimal interval with step value ----
-                    sliderInput("support", "Support:",
-                                min = 0.001, max = 0.999,
-                                value = 0.001, step = 0.001),
-                    
-                    # Input: Decimal interval with step value ----
-                    sliderInput("confidence", "Confidence:",
-                                min = 0.01, max = 0.99,
-                                value = 0.01, step = 0.01)
-                    
+                    # Sidebar to demonstrate various slider options ----
+                    sidebarPanel(
+                      
+                      # Input: Decimal interval with step value ----
+                      sliderInput("supp", "Support:",
+                                  min = 0.01, max = 1,
+                                  value = 0.01, step = 0.01),
+                      
+                      # Input: Decimal interval with step value ----
+                      sliderInput("conf", "Confidence:",
+                                  min = 0.1, max = 1,
+                                  value = 0.5, step = 0.1)
+                      
                     ),
-                  mainPanel(
-                    fluidRow(
-                      column(width = 12,                  
-                             plotlyOutput("mbagraph")
-                             
-                      ),
-                      column(width = 12,
-                             box(
-                               title = "Market Basket Analysis", width = NULL, status = "primary",
-                               div(style = 'overflow-x: scroll', DT::dataTableOutput("mbatbl"))
-                             ))
-                    ),
-                    
-                    fluidRow(
-                      #column(9, DT::dataTableOutput('x3')),
-                      #column(3, verbatimTextOutput('x4'))
+                    mainPanel(
+                      fluidRow(
+                        column(width = 12,                  
+                               plotlyOutput("mbagraph")
+                               
+                        )
+                      )
+                      
                     )
                   )
                 )
-  )
 )
 
 tab3 <- tabItem(tabName = "clientdb",
                 fluidPage(
-                  #use shiny js to disable the ID field
                   h1('Client Database'),
                   
                   shinyjs::useShinyjs(),
                   fluidRow(
                     column(width = 4,  
-                           #input fields
                            tags$hr(),
                            h2('Enter new client:'),
                            shinyjs::hidden(textInput("id", "Id", "0")),
@@ -138,15 +143,13 @@ tab3 <- tabItem(tabName = "clientdb",
                 )
 )
 
-tab4 <- tabItem(tabName = "program",
+tab4 <- tabItem(tabName = "booking",
                 fluidPage(
-                  #use shiny js to disable the ID field
-                  h1('Programs Database'),
-
+                  h1('Bookings Database'),
+                  
                   shinyjs::useShinyjs(),
                   fluidRow(
                     column(width = 5,
-                           #input fields
                            tags$hr(),
                            h3('Enter POC details:'),
                            shinyjs::hidden(textInput("pid", "Id", "0")),
@@ -157,7 +160,6 @@ tab4 <- tabItem(tabName = "program",
                            textInput("poc_contact", "POC Contact", "")
                     ),
                     column(width = 5,
-                           #input fields
                            tags$hr(),
                            h3('Enter Program details:'),
                            textInput("prog_location", "Program Location", ""),
@@ -174,7 +176,7 @@ tab4 <- tabItem(tabName = "program",
                     ),
                     column(width = 12,
                            DT::dataTableOutput("programdb", width="100%")
-
+                           
                     )
                   )
                 )
@@ -182,12 +184,10 @@ tab4 <- tabItem(tabName = "program",
 
 tab5 <- tabItem(tabName = "activity",
                 fluidPage(
-                  #use shiny js to disable the ID field
                   h1('Enter Program Information'),
                   shinyjs::useShinyjs(),
                   fluidRow(
                     column(width = 4,  
-                           #input fields
                            tags$hr(),
                            h2('Choose Prep Day Activities:'),
                            shinyjs::hidden(textInput("ppid", "Id", "0")),
@@ -195,45 +195,44 @@ tab5 <- tabItem(tabName = "activity",
                            tags$hr(),
                            dateInput("activity_date", "Choose Date", "", format = "dd-mm-yy"),
                            selectInput("prep_id","Choose Prep Activity", prepList), #this is where we do drop down list
-                           #timeInput("activity_start_time", "Select Start Time:", seconds = FALSE),
                            textInput("activity_start_time", "Select Start Time:", ""),
                            textInput("activity_duration", "Select Duration", ""),
-                           #timeInput("activity_end_time", "Select End Time:", seconds = FALSE),
-                           textInput("activity_end_time", "Select End Time:", ""),
                            textInput("activity_location", "Select Location", ""),
-                           # dateRangeInput('dateRange',
-                           #                label = 'Date range input: yyyy-mm-dd',
-                           #                start = "", end = ""
-                           # ),
-                           
                            
                            #action buttons for prep day
                            actionButton("submitprepact", "Submit"),
-                           actionButton("updateprepact", "Update"),
-
-                           h2('Choose Actual Day Activities:'),
-                           textInput("activity_date", "Choose Date", ""),
-                           selectInput("prep_id","Choose Actual Day Activity",actList), #this is where we do drop down list
-                           textInput("activity_start_time", "Select Start Time", ""),
-                           textInput("activity_duration", "Select Duration", ""),
-                           #activity_end_time
-                           #activity_location
-                           
-                           #action buttons for prep day
-                           actionButton("submitactlact", "Submit"),
-                           actionButton("updateactlact", "Update")
-
-                           
-                           
+                           actionButton("updateprepact", "Update")
                     ),
                     column(width = 8,                  
                            DT::dataTableOutput("prepprogramdb")
                            
+                    )
+                  ),
+                  tags$hr(),
+                  
+                  fluidRow(
+                    column(width = 4,  
+                           tags$hr(),
+                           h2('Choose Actual Day Activities:'),
+                           shinyjs::hidden(textInput("aid", "Id", "0")),
+                           
+                           selectInput("actual_id","Choose Actual Day Activity", actList), #this is where we do drop down list
+                           dateInput("actual_start_date", "Choose Start Date", "", format = "dd-mm-yy"),
+                           textInput("actual_start_time", "Select Start Time:", ""),
+                           dateInput("actual_end_date", "Choose End Date", "", format = "dd-mm-yy"),
+                           textInput("actual_end_time", "Select End Time:", ""),
+                           textInput("actual_activity_location", "Select Location", ""),
+                           
+                           #action buttons for prep day
+                           actionButton("submitactprogram", "Submit"),
+                           actionButton("updateactprogram", "Update")
                     ),
                     column(width = 8,                  
-                           DT::dataTableOutput("actldb")
+                           DT::dataTableOutput("actprogramdb")
                            
                     )
+                    
+                    
                   )
                 )
 )
@@ -252,8 +251,8 @@ sidebars <- (sidebarMenu(
   menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
   menuItem("Analysis 1 - MBA", tabName = "mba", icon = icon("signal")),
   menuItem("Client Database", tabName = "clientdb", icon = icon("users")),
-  menuItem("Programs Database", tabName = "program", icon = icon("list-ol")),
-  menuItem("Activity", tabName = "activity", icon = icon("pied-piper-alt"))
+  menuItem("Bookings Database", tabName = "booking", icon = icon("list-ol")),
+  menuItem("Activity Database", tabName = "activity", icon = icon("pied-piper-alt"))
   
 ))
 
@@ -269,6 +268,6 @@ ui <- dashboardPage(
 
 source('server.R')
 
-########################################### Start the whole thing ###########################################
+########################################### Link Server and UI ###########################################
 
 shinyApp(ui = ui, server = server)

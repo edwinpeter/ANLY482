@@ -1,8 +1,8 @@
 ########################################### CLIENT DB - Helper, CRUD methods ###########################################
 
 #outputDir_client <- "ClientDB"
-# outputDir_client <- "/Users/Edwin/ANLY482/crud/ClientDB"
-outputDir_client <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/ClientDB"
+outputDir_client <- "/Users/Edwin/ANLY482/crud/ClientDB"
+#outputDir_client <- "D:/Documents/SMU/Year 4/Semester 2/Analytics Practicum/ANLY482/crud/ClientDB"
 
 saveData_client <- function(clientdb) {
   fileName <- sprintf("%s_%s.xls", as.double(format(Sys.time(), "%y%m%d%H%M%S")), "client")
@@ -46,7 +46,6 @@ GetNextId_client <- function() {
 
 #Create
 CreateData_client <- function(data) {
-  
   data <- CastData_client(data)
   rownames(data) <- GetNextId_client()
   if (exists("clientdb")) {
@@ -54,9 +53,7 @@ CreateData_client <- function(data) {
   } else {
     clientdb <<- data
   }
-  
   saveData_client(clientdb)
-  
 }
 
 #Read
@@ -72,7 +69,6 @@ UpdateData_client <- function(data) {
   clientdb[row.names(clientdb) == row.names(data), ] <<- data
   shinyjs::disable('updateclient')
   shinyjs::enable('submitclient')
-  
   saveData_client(clientdb)
 }
 
